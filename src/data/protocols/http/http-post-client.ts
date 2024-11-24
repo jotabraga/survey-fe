@@ -3,6 +3,11 @@ export type HttpPostParams = {
   body?: object;
 };
 
+export type HttpResponse = {
+  statusCode: number;
+  body?: any;
+};
+
 export interface HttpPostClientInterface {
-  post(params: HttpPostParams): Promise<void>;
+  post(params: HttpPostParams): Promise<HttpResponse>;
 }
