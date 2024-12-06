@@ -3,6 +3,7 @@ import { HttpPostClientSpy } from "@/data/mocks/mock-http-client";
 import { RemoteAuthentication } from "./remote-authentication";
 import { faker } from "@faker-js/faker";
 import { InvalidCredentialsError } from "@/domain/errors/invalid-credentials-error";
+import { UnexpectedError } from "@/domain/errors/unexpected-error";
 type SutTypes = {
   sut: RemoteAuthentication;
   httpPostClientSpy: HttpPostClientSpy;
@@ -42,5 +43,16 @@ describe("RemoteAuthentication", () => {
     };
     const promise = sut.auth(authBody);
     expect(promise).rejects.toThrow(new InvalidCredentialsError());
+  });
+
+  test("Should throw unexpected error if http client returns 400", async () => {
+    const authBody = { email: "", password: "" };
+    const mockedUrl = faker.internet.url();
+    const { sut, httpPostClientSpy } = sutFactory(mockedUrl, authBody);
+    httpPostClientSpy.response = {
+      statusCode: 400,
+    };
+    const promise = sut.auth(authBody);
+    expect(promise).rejects.toThrow(new UnexpectedError());
   });
 });

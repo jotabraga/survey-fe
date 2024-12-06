@@ -1,5 +1,6 @@
 import { HttpPostClientInterface } from "@/data/protocols/http/http-post-client";
 import { InvalidCredentialsError } from "@/domain/errors/invalid-credentials-error";
+import { UnexpectedError } from "@/domain/errors/unexpected-error";
 import { AuthenticationParams } from "@/domain/useCases/authentication";
 
 export class RemoteAuthentication {
@@ -15,6 +16,9 @@ export class RemoteAuthentication {
       },
       200: () => {
         return { statusCode: 200, body };
+      },
+      400: () => {
+        throw new UnexpectedError();
       },
     };
 
