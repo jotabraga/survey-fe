@@ -10,20 +10,21 @@ export class RemoteAuthentication {
     private readonly httpPostClient: HttpPostClientInterface
   ) {}
 
-  private handleResponseStatus(status: number, body?: any): void {
-    const responseCases: Record<number, () => void> = {
-      401: () => {
+  private handleResponseStatus(status: number, body?: any): any {
+    switch (status) {
+      case HttpStatusCode.UNAUTHORIZED:
         throw new InvalidCredentialsError();
-      },
-      200: () => {
+      case HttpStatusCode.OK:
         return { statusCode: HttpStatusCode.OK, body };
-      },
-      400: () => {
+      case HttpStatusCode.NO_CONTENT:
+        return { statusCode: HttpStatusCode.NO_CONTENT };
+      case HttpStatusCode.BAD_REQUEST:
         throw new UnexpectedError();
-      },
-    };
-
-    return responseCases[status || 400]();
+      case HttpStatusCode.SERVER_ERROR:
+        throw new UnexpectedError();
+      default:
+        throw new UnexpectedError();
+    }
   }
 
   async auth(authenticationParams: AuthenticationParams): Promise<void> {
