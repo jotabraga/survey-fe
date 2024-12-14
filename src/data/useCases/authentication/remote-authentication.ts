@@ -2,6 +2,7 @@ import { HttpPostClientInterface } from "@/data/protocols/http/http-post-client"
 import { InvalidCredentialsError } from "@/domain/errors/invalid-credentials-error";
 import { UnexpectedError } from "@/domain/errors/unexpected-error";
 import { AuthenticationParams } from "@/domain/useCases/authentication";
+import { HttpStatusCode } from "@/data/protocols/http/http-response";
 
 export class RemoteAuthentication {
   constructor(
@@ -15,14 +16,14 @@ export class RemoteAuthentication {
         throw new InvalidCredentialsError();
       },
       200: () => {
-        return { statusCode: 200, body };
+        return { statusCode: HttpStatusCode.OK, body };
       },
       400: () => {
         throw new UnexpectedError();
       },
     };
 
-    return responseCases[status || 200]();
+    return responseCases[status || 400]();
   }
 
   async auth(authenticationParams: AuthenticationParams): Promise<void> {
